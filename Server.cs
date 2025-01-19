@@ -56,7 +56,7 @@ namespace Proyecto3
             finally
             {
                 client.Close();
-                Console.WriteLine("Cliente desconectado.");
+                // Console.WriteLine("Cliente desconectado.");
             }
         }
 

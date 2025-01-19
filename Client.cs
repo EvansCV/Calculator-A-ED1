@@ -22,24 +22,6 @@ namespace Proyecto3
                 Console.WriteLine($"Error: {ex.Message}");
             }
         }
-//public void GetOutput(StreamReader reader, StreamWriter writer)
-//{
-//
-//    // Instancia de la interfaz.
-//    CalculatorForm gui = new CalculatorForm();
-//    while (true)
-//    {
-//        string? input = gui.GetExpressionInput();
-//        if (input?.ToLower() == "salir") break;
-//
-//        writer.WriteLine(input);
-//        string response = reader.ReadLine();
-//        Console.WriteLine($"Respuesta del servidor: {response}");
-//        if (response != null)
-//            gui.SetResult(response);
-//    }
-//}}
-        
 
         public string SendExpression(string expression)
         {
