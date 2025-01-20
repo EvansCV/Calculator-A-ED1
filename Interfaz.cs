@@ -16,7 +16,7 @@ namespace Proyecto3 {
             client = clientInstance;
             // Configuración básica de la ventana
             Text = "Calculadora de Expresiones Matemáticas";
-            Size = new Size(400, 300);
+            Size = new Size(400, 300);  
 
             // Entrada de la expresión
             Label expressionLabel = new Label();
@@ -67,6 +67,7 @@ namespace Proyecto3 {
             expressionInput.KeyPress -= expressionInput_KeyPress_Logic;
             expressionInput.KeyPress += expressionInput_KeyPress_Math;
 
+            // Evento Resize para cuando el usuario abre la ventana en grande
         }
 
         private void CalculateButton_Click(object sender, EventArgs e)
@@ -79,20 +80,9 @@ namespace Proyecto3 {
                     MessageBox.Show("Ingrese una expresión válida.", "Advertencia", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
-                // Formatear la entrada para enviarla al servidor
-                string serverInput = "";
-                for (int i = 0; i < input.Length; i++)
-                {
-                    serverInput += input[i];
-                    // Agregar un espacio si no es el último carácter
-                    if (i < input.Length - 1 && input[i + 1] != ' ')
-                    {
-                        serverInput += " ";
-                    }
-                }       
 
                 // Enviar datos al servidor a través del cliente
-                string response = client.SendExpression(serverInput);
+                string response = client.SendExpression(input);
                 
                 // Mostrar resultado
                 resultLabel.Text = $"{response}";

@@ -14,7 +14,7 @@ namespace Proyecto3
         {
             TcpListener server = new TcpListener(IPAddress.Any, port);
             server.Start();
-            Console.WriteLine($"Servidor iniciado en el puerto {port}...");
+            //Console.WriteLine($"Servidor iniciado en el puerto {port}...");
 
             while (true)
             {

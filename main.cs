@@ -24,6 +24,7 @@ class Program
             Console.WriteLine("1. Iniciar Cliente");
             Console.WriteLine("2. Evaluar expresión localmente");
             Console.WriteLine("3. Salir");
+            Console.Write("Opción: ");
 
             string? choice = Console.ReadLine();
 
@@ -89,8 +90,9 @@ class Program
     }
 
     public static string ConvertToPostfix(string infix)
-    {
-        string[] tokens = infix.Split(" ");
+    {   
+        string newchain = SepararEnEspacios(infix);
+        string[] tokens = newchain.Split(" ");
         Stack<string> operators = new Stack<string>();
         List<string> output = new List<string>();
 
@@ -152,7 +154,61 @@ class Program
     {
         return op == "**";
     }
+
+    private static string SepararEnEspacios(string cadena) 
+    {
+        if (string.IsNullOrWhiteSpace(cadena)) 
+        {
+            return string.Empty; // Manejar cadenas vacías o solo espacios.
+        }
+
+        string newChain = "";
+        for (int i = 0; i < cadena.Length; i++) 
+        {
+            char actual = cadena[i];
+            char siguiente = i < cadena.Length - 1 ? cadena[i + 1] : '\0';
+
+            // Agregar el carácter actual a la nueva cadena.
+            newChain += actual;
+
+            // Condición para insertar un espacio:
+            // 1. Si el carácter actual es un paréntesis de apertura o un operador,
+            //    y el siguiente no es un espacio ni un paréntesis de cierre.
+            if (actual == '(' && siguiente != ' ' && siguiente != ')')
+            {
+                newChain += ' ';
+            }
+            // 2. Si el carácter actual es un número y el siguiente no es un número o espacio.
+            else if (char.IsDigit(actual) && siguiente != ' ' && !char.IsDigit(siguiente))
+            {
+                newChain += ' ';
+            }
+            // 3. Si el carácter actual no es un número ni un espacio, y el siguiente es un número.
+            else if (!char.IsDigit(actual) && actual != ' ' && char.IsDigit(siguiente))
+            {
+                newChain += ' ';
+            }
+            // 4. Si el carácter actual es un operador o un paréntesis de cierre,
+            //    y el siguiente no es un espacio ni un paréntesis de apertura.
+            else if ((actual == ')' || "+-*/%&|^~".Contains(actual)) && siguiente != ' ' && siguiente == '(')
+            {
+                newChain += ' ';
+            }
+            // 5. Paréntesis seguido de otro paréntesis
+            else if (actual == ')' && siguiente == ')')
+            {
+                newChain += ' ';
+            }
+             
+        }
+        Console.WriteLine(newChain);    
+        // Eliminar espacios innecesarios al inicio y al final.
+        return newChain.Trim();
+    }
 }
+
+
+
 
 
 

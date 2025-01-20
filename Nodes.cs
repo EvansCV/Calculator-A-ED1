@@ -1,3 +1,5 @@
+using System.Linq.Expressions;
+
 namespace Proyecto3 {
     // Clase base para nodos del árbol
     public abstract class ExpressionNode
@@ -22,7 +24,7 @@ namespace Proyecto3 {
     }
 
 
-    // Nodo que representa un operador (+, -, *, /)
+    // Nodo que representa un operador (+, -, *, /...)
     public class OperatorNode : ExpressionNode
     {
         private readonly string operatorChar;
@@ -43,6 +45,7 @@ namespace Proyecto3 {
         {
             double leftValue = left.Evaluate();
             double rightValue = right.Evaluate();
+
 
             return operatorChar switch
             {

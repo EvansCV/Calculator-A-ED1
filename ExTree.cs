@@ -28,7 +28,8 @@ namespace Proyecto3 {
 
             foreach (string token in tokens)
             {
-                if (double.TryParse(token, out double number)) // Si es un número
+                // Detectar números (incluyendo negativos como "-5")
+                if (double.TryParse(token, out double number))
                 {
                     stack.Push(new NumberNode(number));
                 }
@@ -36,9 +37,9 @@ namespace Proyecto3 {
                 {
                     if (token == "~") // NOT es un operador unario
                     {
-                        if (stack.Count < 1) 
+                        if (stack.Count < 1)
                             throw new InvalidOperationException("Operando insuficiente para el operador '~'.");
-                        
+
                         ExpressionNode left = stack.Pop();
                         stack.Push(new LogicalNode(token, left, null));
                     }
@@ -53,7 +54,7 @@ namespace Proyecto3 {
                     }
                     else // Operadores matemáticos
                     {
-                        if (stack.Count < 2) 
+                        if (stack.Count < 2)
                             throw new InvalidOperationException($"Operando insuficiente para el operador '{token}'.");
 
                         ExpressionNode right = stack.Pop();
@@ -69,7 +70,7 @@ namespace Proyecto3 {
 
             if (stack.Count != 1)
                 throw new InvalidOperationException("La expresión postfija es inválida.");
-            
+
             return stack.Pop(); // La raíz del árbol
         }
     }
