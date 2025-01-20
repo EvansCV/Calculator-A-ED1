@@ -8,6 +8,8 @@ namespace Proyecto3 {
         private Button calculateButton;
         private Button modeButton;
         private Label resultLabel;
+        private Label modeText;
+        private Label modeText2;
         private bool ttModeValue = true;
         public CalculatorForm(Client clientInstance)
         {
@@ -26,6 +28,20 @@ namespace Proyecto3 {
             expressionInput.Location = new Point(120, 20);
             expressionInput.Width = 250;
             Controls.Add(expressionInput);
+
+            // Labels con información del modo que está siendo utilizado
+            modeText = new Label();
+            modeText.Location = new Point(120, 60);
+            modeText2 = new Label();
+            modeText2.Location = new Point(20, 130);
+            modeText.Text = "Evaluando expresiones matemáticas";
+            modeText2.Text = "Si desea evaluar expresiones lógicas clickee este botón";
+            Controls.Add(modeText);
+            Controls.Add(modeText2);
+
+            // Ajuste de los Labels por el texto muy largo
+            modeText.AutoSize = true;
+            modeText2.AutoSize = true;
 
             // Botón para calcular
             calculateButton = new Button();
@@ -47,6 +63,9 @@ namespace Proyecto3 {
             resultLabel.Location = new Point(20, 210);
             resultLabel.AutoSize = true;
             Controls.Add(resultLabel);
+
+            expressionInput.KeyPress -= expressionInput_KeyPress_Logic;
+            expressionInput.KeyPress += expressionInput_KeyPress_Math;
 
         }
 
@@ -92,18 +111,29 @@ namespace Proyecto3 {
             
             try {
                 if (ttModeValue) {
+                    // Cambiar el botón de modo
                     Controls.Remove(modeButton);
                     modeButton.Text = "Logic";
                     Controls.Add(modeButton);
+
+                    // Labels informativos
+                    modeText.Text = "Evaluando expresiones matemáticas";
+                    modeText2.Text = "Si desea evaluar expresiones lógicas clickee este botón";
+                    
                     // Validación de entradas y control de fujo.
                     // Modo matemático
                     expressionInput.KeyPress -= expressionInput_KeyPress_Logic;
                     expressionInput.KeyPress += expressionInput_KeyPress_Math;        
                 } else {
-                    // Aquí más de lo mismo pero con expresiones matemáticas
+                    // Aquí más de lo mismo pero con expresiones lógicas
+                    modeText.Text = "Evaluando expresiones lógicas";
+                    modeText2.Text = "Si desea evaluar expresiones matemáticas clickee este botón";
+
                     Controls.Remove(modeButton);
                     modeButton.Text = "Math";
-                    Controls.Add(modeButton);                    // Modo lógico
+                    Controls.Add(modeButton);
+
+                    // Modo lógico
                     expressionInput.KeyPress -= expressionInput_KeyPress_Math;
                     expressionInput.KeyPress += expressionInput_KeyPress_Logic;
                 }
