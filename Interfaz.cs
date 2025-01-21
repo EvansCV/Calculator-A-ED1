@@ -59,7 +59,7 @@ namespace Proyecto3 {
 
             // Resultado
             resultLabel = new Label();
-            resultLabel.Text = "Result: ";
+            resultLabel.Text = "";
             resultLabel.Location = new Point(20, 210);
             resultLabel.AutoSize = true;
             Controls.Add(resultLabel);
@@ -135,7 +135,7 @@ namespace Proyecto3 {
         private void expressionInput_KeyPress_Math(object sender, KeyPressEventArgs e)
         {
             // Permitir números, operadores y teclas de control como retroceso
-            if (!char.IsDigit(e.KeyChar) && "+-*/().% ".IndexOf(e.KeyChar) == -1 && !char.IsControl(e.KeyChar))
+            if (!char.IsDigit(e.KeyChar) && "+-*/().%, ".IndexOf(e.KeyChar) == -1 && !char.IsControl(e.KeyChar))
             {
                 e.Handled = true; // Bloquea la tecla
             }

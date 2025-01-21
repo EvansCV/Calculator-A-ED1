@@ -1,4 +1,5 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Diagnostics.Eventing.Reader;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 using Proyecto3;
@@ -31,15 +32,17 @@ class Program
             switch (choice)
             {
                 case "1":
-                    // Se inicia el cliente creando su instancia y llamando al método Start
-                    Console.WriteLine("Iniciando cliente...");
-                    Client client = new Client();
-                    client.Start();
-                    //CalculatorForm cal = new CalculatorForm(client);
-                    // Se crea una nueva gui, donde la cual requiere del cliente para interactuar con el mismo.
-                    Application.EnableVisualStyles();
-                    Application.SetCompatibleTextRenderingDefault(false);
-                    Application.Run(new CalculatorForm(client));
+                   // Ejecutar la interfaz gráfica en un nuevo hilo para evitar conflictos con la consola
+                    Thread guiThread = new Thread(() =>
+                    {
+                        Application.EnableVisualStyles();
+                        Application.SetCompatibleTextRenderingDefault(false);
+                        Client client = new Client(); // Crear una instancia del cliente
+                        Console.WriteLine($"Cliente creado con ID: {client.Id}");
+                        Application.Run(new CalculatorForm(client)); // Iniciar la interfaz gráfica
+                    });
+                    guiThread.SetApartmentState(ApartmentState.STA); // Requerido para la compatibilidad con Windows Forms
+                    guiThread.Start();
                     break;
 
                 case "2":
@@ -89,6 +92,7 @@ class Program
         server.Start();
     }
 
+    // Método para convertir de notación infija a postfija
     public static string ConvertToPostfix(string infix)
     {   
         string newchain = SepararEnEspacios(infix);
@@ -167,6 +171,7 @@ class Program
         {
             char actual = cadena[i];
             char siguiente = i < cadena.Length - 1 ? cadena[i + 1] : '\0';
+            char anterior = i > 0 ? cadena[i - 1] : '\0';
 
             // Agregar el carácter actual a la nueva cadena.
             newChain += actual;
@@ -178,28 +183,34 @@ class Program
             {
                 newChain += ' ';
             }
-            // 2. Si el carácter actual es un número y el siguiente no es un número o espacio.
-            else if (char.IsDigit(actual) && siguiente != ' ' && !char.IsDigit(siguiente))
+            // 2. Si el carácter actual es un número o coma y el siguiente no es un número, coma o espacio.
+            else if ((char.IsDigit(actual) || actual == ',') && siguiente != ' ' && !char.IsDigit(siguiente) && siguiente != ',')
             {
                 newChain += ' ';
             }
-            // 3. Si el carácter actual no es un número ni un espacio, y el siguiente es un número.
-            else if (!char.IsDigit(actual) && actual != ' ' && char.IsDigit(siguiente))
+            // 3. Si el carácter actual no es un número, coma ni espacio, y el siguiente es un número o coma.
+            else if (!char.IsDigit(actual) && actual != ',' && actual != ' ' && (char.IsDigit(siguiente) || siguiente == ','))
             {
                 newChain += ' ';
             }
             // 4. Si el carácter actual es un operador o un paréntesis de cierre,
             //    y el siguiente no es un espacio ni un paréntesis de apertura.
-            else if ((actual == ')' || "+-*/%&|^~".Contains(actual)) && siguiente != ' ' && siguiente == '(')
+            else if ((actual == ')' || "+*/%&|^~".Contains(actual)) && siguiente != ' ' && siguiente != '(')
             {
                 newChain += ' ';
             }
-            // 5. Paréntesis seguido de otro paréntesis
-            else if (actual == ')' && siguiente == ')')
+            // 5. Manejar números decimales negativos: si el carácter actual es un signo menos (-),
+            //    y es el primer carácter o viene después de un operador o un paréntesis de apertura,
+            //    y el siguiente carácter es un dígito.
+            else if (actual == '-' && (i == 0 || "(+-*/%&|^~".Contains(anterior)) && char.IsDigit(siguiente))
+            {
+                continue; // No insertar espacio aquí para números negativos.
+            }
+            // 6. Paréntesis seguido de otro paréntesis
+            else if (actual == ')' && siguiente == '(')
             {
                 newChain += ' ';
             }
-             
         }
         Console.WriteLine(newChain);    
         // Eliminar espacios innecesarios al inicio y al final.
