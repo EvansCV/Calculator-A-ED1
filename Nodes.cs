@@ -44,6 +44,9 @@ namespace Proyecto3 {
             double leftValue = left.Evaluate();
             double rightValue = right.Evaluate();
 
+            double? leftValueNullable = left?.Evaluate();
+            double? rightValueNullable = right?.Evaluate();
+
 
             return operatorChar switch
             {

@@ -189,28 +189,34 @@ class Program
                 newChain += ' ';
             }
             // 3. Si el carácter actual no es un número, coma ni espacio, y el siguiente es un número o coma.
-            else if (!char.IsDigit(actual) && actual != ',' && actual != ' ' && (char.IsDigit(siguiente) || siguiente == ','))
+            else if (!char.IsDigit(actual) && actual != ',' && actual != ' ' && (char.IsDigit(siguiente) || siguiente == ',') && actual != '-')
             {
+                newChain += ' ';
+            }
+            else if ((actual == '-' && !char.IsDigit(siguiente)) && (actual == '-' && siguiente == cadena[cadena.Length - 1] &&
+            cadena[0] != '-')) {
                 newChain += ' ';
             }
             // 4. Si el carácter actual es un operador o un paréntesis de cierre,
             //    y el siguiente no es un espacio ni un paréntesis de apertura.
-            else if ((actual == ')' || "+*/%&|^~".Contains(actual)) && siguiente != ' ' && siguiente != '(')
+            else if ((actual == ')' || "+*/%&|^~".Contains(actual)) && siguiente != ' ')
             {
                 newChain += ' ';
             }
             // 5. Manejar números decimales negativos: si el carácter actual es un signo menos (-),
             //    y es el primer carácter o viene después de un operador o un paréntesis de apertura,
-            //    y el siguiente carácter es un dígito.
-            else if (actual == '-' && (i == 0 || "(+-*/%&|^~".Contains(anterior)) && char.IsDigit(siguiente))
+            //    y el siguiente carácter es un dígito o una coma.
+            else if (actual == '-' && (i == 0 || "(+-*/%&|^~".Contains(anterior)) && (char.IsDigit(siguiente) || siguiente == ','))
             {
                 continue; // No insertar espacio aquí para números negativos.
             }
-            // 6. Paréntesis seguido de otro paréntesis
-            else if (actual == ')' && siguiente == '(')
+            // 6. Paréntesis seguido de otro paréntesis o combinación similar.
+            else if ((actual == ')' && siguiente == '(') || (actual == '(' && siguiente == '(') || 
+                    (actual == ')' && siguiente == ')'))
             {
                 newChain += ' ';
             }
+            
         }
         Console.WriteLine(newChain);    
         // Eliminar espacios innecesarios al inicio y al final.
