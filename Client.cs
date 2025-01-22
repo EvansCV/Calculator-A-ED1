@@ -35,7 +35,7 @@ namespace Proyecto3
             using NetworkStream stream = client.GetStream();
             StreamReader reader = new StreamReader(stream, Encoding.UTF8);
             StreamWriter writer = new StreamWriter(stream, Encoding.UTF8) { AutoFlush = true };
-
+            writer.WriteLine(Id);
             writer.WriteLine(expression);
             return reader.ReadLine() ?? "Sin respuesta del servidor.";
         }
@@ -63,5 +63,6 @@ namespace Proyecto3
 
             return history.ToString();
         }
+
     }
 }

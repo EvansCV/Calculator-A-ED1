@@ -77,7 +77,8 @@ class Program
 
                 case "3":
                     Console.WriteLine("Saliendo...");
-                    return;
+                    Environment.Exit(0); // Terminar todo el programa
+                    break;
 
                 default:
                     Console.WriteLine("Opción inválida. Intente de nuevo.");
@@ -223,10 +224,3 @@ class Program
         return newChain.Trim();
     }
 }
-
-
-
-
-
-
-

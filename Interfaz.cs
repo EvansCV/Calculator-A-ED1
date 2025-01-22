@@ -88,7 +88,7 @@ namespace Proyecto3
             // Resultado
             resultLabel = new Label
             {
-                Text = "Resultado: ",
+                Text = "",
                 Location = new Point(20, 210),
                 AutoSize = true
             };
