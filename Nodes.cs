@@ -1,5 +1,3 @@
-using System.Linq.Expressions;
-
 namespace Proyecto3 {
     // Clase base para nodos del árbol
     public abstract class ExpressionNode
@@ -9,7 +7,7 @@ namespace Proyecto3 {
 
     // Nodo que representa un número (hoja)
     public class NumberNode : ExpressionNode
-    {
+    {  
         private double value;
 
         public NumberNode(double value)
@@ -45,6 +43,9 @@ namespace Proyecto3 {
         {
             double leftValue = left.Evaluate();
             double rightValue = right.Evaluate();
+
+            double? leftValueNullable = left?.Evaluate();
+            double? rightValueNullable = right?.Evaluate();
 
 
             return operatorChar switch

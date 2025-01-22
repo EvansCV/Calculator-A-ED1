@@ -1,78 +1,108 @@
 // Código dedicado meramente a las clases de la interfaz, el punto será utilizarlo en el cliente.
 
-namespace Proyecto3 {
+namespace Proyecto3
+{
     public class CalculatorForm : Form
     {
         private readonly Client client;
         private TextBox expressionInput;
         private Button calculateButton;
         private Button modeButton;
+        private Button historyButton; // Botón para consultar el historial
         private Label resultLabel;
         private Label modeText;
         private Label modeText2;
         private bool ttModeValue = true;
+
         public CalculatorForm(Client clientInstance)
         {
             client = clientInstance;
+
             // Configuración básica de la ventana
-            Text = "Calculadora de Expresiones Matemáticas";
-            Size = new Size(400, 300);  
+            Text = $"Calculadora de Expresiones Matemáticas - Cliente {client.Id}";
+            Size = new Size(500, 400);
 
             // Entrada de la expresión
-            Label expressionLabel = new Label();
-            expressionLabel.Text = "Expression";
-            expressionLabel.Location = new Point(20, 20);
+            Label expressionLabel = new Label
+            {
+                Text = "Expression",
+                Location = new Point(20, 20),
+                AutoSize = true
+            };
             Controls.Add(expressionLabel);
 
-            expressionInput = new TextBox();
-            expressionInput.Location = new Point(120, 20);
-            expressionInput.Width = 250;
+            expressionInput = new TextBox
+            {
+                Location = new Point(120, 20),
+                Width = 300
+            };
             Controls.Add(expressionInput);
 
             // Labels con información del modo que está siendo utilizado
-            modeText = new Label();
-            modeText.Location = new Point(120, 60);
-            modeText2 = new Label();
-            modeText2.Location = new Point(20, 130);
-            modeText.Text = "Evaluando expresiones matemáticas";
-            modeText2.Text = "Si desea evaluar expresiones lógicas clickee este botón";
+            modeText = new Label
+            {
+                Location = new Point(120, 60),
+                Text = "Evaluando expresiones matemáticas",
+                AutoSize = true
+            };
             Controls.Add(modeText);
+
+            modeText2 = new Label
+            {
+                Location = new Point(20, 130),
+                Text = "Si desea evaluar expresiones lógicas, haga clic en el botón de modo",
+                AutoSize = true
+            };
             Controls.Add(modeText2);
 
-            // Ajuste de los Labels por el texto muy largo
-            modeText.AutoSize = true;
-            modeText2.AutoSize = true;
-
             // Botón para calcular
-            calculateButton = new Button();
-            calculateButton.Text = "Calculate";
-            calculateButton.Location = new Point(20, 60);
+            calculateButton = new Button
+            {
+                Text = "Calculate",
+                Location = new Point(20, 60),
+                Width = 100
+            };
             calculateButton.Click += CalculateButton_Click;
-            Controls.Add(calculateButton);  
+            Controls.Add(calculateButton);
 
             // Botón para cambiar de modo
-            modeButton = new Button();
-            modeButton.Text = "Logic";
-            modeButton.Location = new Point(20, 100);
-            modeButton.Click += modeButton_Click;
+            modeButton = new Button
+            {
+                Text = "Logic",
+                Location = new Point(20, 100),
+                Width = 100
+            };
+            modeButton.Click += ModeButton_Click;
             Controls.Add(modeButton);
 
+            // Botón para consultar el historial
+            historyButton = new Button
+            {
+                Text = "History",
+                Location = new Point(20, 150),
+                Width = 100
+            };
+            historyButton.Click += async (sender, e) => await HistoryButton_Click(sender, e); // Operación asíncrona
+            Controls.Add(historyButton);
+
             // Resultado
-            resultLabel = new Label();
-            resultLabel.Text = "Result: ";
-            resultLabel.Location = new Point(20, 210);
-            resultLabel.AutoSize = true;
+            resultLabel = new Label
+            {
+                Text = "Resultado: ",
+                Location = new Point(20, 210),
+                AutoSize = true
+            };
             Controls.Add(resultLabel);
 
-            expressionInput.KeyPress -= expressionInput_KeyPress_Logic;
-            expressionInput.KeyPress += expressionInput_KeyPress_Math;
-
-            // Evento Resize para cuando el usuario abre la ventana en grande
+            // Configuración inicial para teclas de entrada
+            expressionInput.KeyPress -= ExpressionInput_KeyPress_Logic;
+            expressionInput.KeyPress += ExpressionInput_KeyPress_Math;
         }
 
         private void CalculateButton_Click(object sender, EventArgs e)
         {
-            try {
+            try
+            {
                 string input = expressionInput.Text;
 
                 if (string.IsNullOrWhiteSpace(input))
@@ -83,67 +113,74 @@ namespace Proyecto3 {
 
                 // Enviar datos al servidor a través del cliente
                 string response = client.SendExpression(input);
-                
+
                 // Mostrar resultado
-                resultLabel.Text = $"{response}";
+                resultLabel.Text = $"Result: {response}";
             }
-            catch (Exception ex) {
+            catch (Exception ex)
+            {
                 MessageBox.Show($"Error: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
-        private void modeButton_Click (object sender, EventArgs e) {
-            // Cambia el valor de la variable del modo
-            ttModeValue = !ttModeValue;
-
-            // Se limpia el textbox
-            expressionInput.Clear(); 
-            
-            try {
-                if (ttModeValue) {
-                    // Cambiar el botón de modo
-                    Controls.Remove(modeButton);
-                    modeButton.Text = "Logic";
-                    Controls.Add(modeButton);
-
-                    // Labels informativos
-                    modeText.Text = "Evaluando expresiones matemáticas";
-                    modeText2.Text = "Si desea evaluar expresiones lógicas clickee este botón";
-                    
-                    // Validación de entradas y control de fujo.
-                    // Modo matemático
-                    expressionInput.KeyPress -= expressionInput_KeyPress_Logic;
-                    expressionInput.KeyPress += expressionInput_KeyPress_Math;        
-                } else {
-                    // Aquí más de lo mismo pero con expresiones lógicas
-                    modeText.Text = "Evaluando expresiones lógicas";
-                    modeText2.Text = "Si desea evaluar expresiones matemáticas clickee este botón";
-
-                    Controls.Remove(modeButton);
-                    modeButton.Text = "Math";
-                    Controls.Add(modeButton);
-
-                    // Modo lógico
-                    expressionInput.KeyPress -= expressionInput_KeyPress_Math;
-                    expressionInput.KeyPress += expressionInput_KeyPress_Logic;
-                }
-            } catch (Exception ex) {
-                MessageBox.Show($"Error: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
-
-        private void expressionInput_KeyPress_Math(object sender, KeyPressEventArgs e)
+        private void ModeButton_Click(object sender, EventArgs e)
         {
-            // Permitir números, operadores y teclas de control como retroceso
-            if (!char.IsDigit(e.KeyChar) && "+-*/().% ".IndexOf(e.KeyChar) == -1 && !char.IsControl(e.KeyChar))
+            ttModeValue = !ttModeValue;
+            expressionInput.Clear();
+
+            try
+            {
+                if (ttModeValue)
+                {
+                    modeButton.Text = "Logic";
+                    modeText.Text = "Evaluando expresiones matemáticas";
+                    modeText2.Text = "Si desea evaluar expresiones lógicas, haga clic en el botón de modo";
+
+                    expressionInput.KeyPress -= ExpressionInput_KeyPress_Logic;
+                    expressionInput.KeyPress += ExpressionInput_KeyPress_Math;
+                }
+                else
+                {
+                    modeButton.Text = "Math";
+                    modeText.Text = "Evaluando expresiones lógicas";
+                    modeText2.Text = "Si desea evaluar expresiones matemáticas, haga clic en el botón de modo";
+
+                    expressionInput.KeyPress -= ExpressionInput_KeyPress_Math;
+                    expressionInput.KeyPress += ExpressionInput_KeyPress_Logic;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private async Task HistoryButton_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                // Realizar la operación de consulta en un hilo separado
+                string history = await Task.Run(() => client.GetHistory());
+
+                // Mostrar el historial en un cuadro de diálogo
+                MessageBox.Show(history, $"Historial del Cliente {client.Id}", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error al consultar el historial: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void ExpressionInput_KeyPress_Math(object sender, KeyPressEventArgs e)
+        {
+            if (!char.IsDigit(e.KeyChar) && "+-*/().%, ".IndexOf(e.KeyChar) == -1 && !char.IsControl(e.KeyChar))
             {
                 e.Handled = true; // Bloquea la tecla
             }
         }
 
-        private void expressionInput_KeyPress_Logic(object sender, KeyPressEventArgs e)
+        private void ExpressionInput_KeyPress_Logic(object sender, KeyPressEventArgs e)
         {
-            // Permitir 1, 0, operadores lógicos y teclas de control como retroceso
             if ("10&|^~ ".IndexOf(e.KeyChar) == -1 && !char.IsControl(e.KeyChar))
             {
                 e.Handled = true; // Bloquea la tecla
